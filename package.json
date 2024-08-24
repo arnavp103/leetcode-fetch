@@ -1,11 +1,13 @@
 {
 	"name": "leetcode-fetch",
-	"version": "0.0.1",
 	"description": "Fetch leetcode problems to work on them locally",
+	"version": "0.0.1",
 	"author": {
 		"name": "Arnav Priyadarshi",
 		"email": "arnavp103@gmail.com"
 	},
+	"repository": "https://github.com/arnavp103/leetcode-fetch",
+	"license": "MIT",
 	"type": "module",
 	"bin": {
 		"leetcode-fetch": "./dist/index.js"
