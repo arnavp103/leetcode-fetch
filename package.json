@@ -1,0 +1,24 @@
+{
+	"name": "leetcode-fetch",
+	"version": "0.0.1",
+	"description": "Fetch leetcode problems to work on them locally",
+	"author": {
+		"name": "Arnav Priyadarshi",
+		"email": "arnavp103@gmail.com"
+	},
+	"type": "module",
+	"bin": {
+		"leetcode-fetch": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsc"
+	},
+	"devDependencies": {
+		"@types/node": "20.0.0",
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"commander": "^12.1.0",
+		"node-fetch": "^3.3.2"
+	}
+}
