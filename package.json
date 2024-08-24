@@ -6,11 +6,14 @@
 		"name": "Arnav Priyadarshi",
 		"email": "arnavp103@gmail.com"
 	},
-	"repository": "https://github.com/arnavp103/leetcode-fetch",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/arnavp103/leetcode-fetch.git"
+	},
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"leetcode-fetch": "./dist/index.js"
+		"leetcode-fetch": "dist/index.js"
 	},
 	"scripts": {
 		"build": "tsc"
