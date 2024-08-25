@@ -8,7 +8,7 @@ const program = new Command();
 
 program
 	.name("leetcode-fetch")
-	.version("0.0.1")
+	.version("0.0.2")
 	.description("Fetch LeetCode problems and save them locally")
 	.argument(
 		"[problem-link]",
@@ -84,7 +84,7 @@ interface Problem {
 main();
 async function main() {
 	const problemLink = program.args[0];
-	const language = program.opts().lang;
+	const language = normalizeLanguage(program.opts().lang);
 	const useSlug = program.opts().slug;
 
 	try {
@@ -146,6 +146,27 @@ async function getProblem(problemLink?: string) {
 	};
 }
 
+// turns js and javascript into js for example
+function normalizeLanguage(language: string): string {
+	const languageMap: { [key: string]: string } = {
+		js: "javascript",
+		ts: "typescript",
+		py: "python",
+		py3: "python3",
+		"c++": "cpp",
+		cs: "csharp",
+		"c#": "csharp",
+		kt: "kotlin",
+		rkt: "racket",
+		go: "golang",
+		rb: "ruby",
+		rs: "rust",
+		exs: "elixir",
+		erl: "erlang"
+	};
+	return languageMap[language.toLowerCase()] || language;
+}
+
 function getFileExtension(language: string): string {
 	const extensionMap: { [key: string]: string } = {
 		c: "c",
@@ -180,6 +201,7 @@ function stripHtmlTagsAndDecode(html: string): string {
 		"&amp;": "&",
 		"&lt;": "<",
 		"&gt;": ">",
+		"&#39;": "'",
 		"&nbsp;": " ",
 		"&copy;": "©",
 		"&reg;": "®",
