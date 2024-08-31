@@ -8,7 +8,7 @@ const program = new Command();
 
 program
 	.name("leetcode-fetch")
-	.version("0.0.2")
+	.version("0.1.0")
 	.description("Fetch LeetCode problems and save them locally")
 	.argument(
 		"[problem-link]",

@@ -1,7 +1,7 @@
 {
 	"name": "leetcode-fetch",
 	"description": "Fetch leetcode problems to work on them locally",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"author": {
 		"name": "Arnav Priyadarshi",
 		"email": "arnavp103@gmail.com"
