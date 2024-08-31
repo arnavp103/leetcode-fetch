@@ -22,6 +22,10 @@ program
 	.option(
 		"-s, --slug",
 		"Use the problem's slug as the filename instead of its ID"
+	)
+	.option(
+		"-b, --bare",
+		"Only include problem title, difficulty, and starter snippet"
 	);
 
 program.parse(process.argv);
@@ -86,6 +90,7 @@ async function main() {
 	const problemLink = program.args[0];
 	const language = normalizeLanguage(program.opts().lang);
 	const useSlug = program.opts().slug;
+	const bare = program.opts().bare;
 
 	try {
 		const problem = await getProblem(problemLink);
@@ -97,14 +102,19 @@ async function main() {
 		let fileContent = `${problem.questionId} ${problem.title}
 ${problem.link} - ${problem.difficulty}
 
-${stripHtmlTagsAndDecode(problem.content)}`;
+`;
 
-		fileContent += `\n${
+		if (!bare) {
+			fileContent += `${stripHtmlTagsAndDecode(problem.content)}\n`;
+		}
+
+		fileContent += `${
 			problem.codeSnippets.find(snippet => snippet.langSlug === language)
 				?.code || `// No ${language} code available`
 		}`;
 
 		fs.writeFileSync(fileName, fileContent);
+		console.log(`File created: ${fileName}`);
 	} catch (error: any) {
 		console.error("Error:", error.message);
 	}
@@ -202,6 +212,8 @@ function stripHtmlTagsAndDecode(html: string): string {
 		"&lt;": "<",
 		"&gt;": ">",
 		"&#39;": "'",
+		"#39;": "'",
+		"#34;": '"',
 		"&nbsp;": " ",
 		"&copy;": "©",
 		"&reg;": "®",
