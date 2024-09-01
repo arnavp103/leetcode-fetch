@@ -5,11 +5,12 @@ import fetch from "node-fetch";
 const program = new Command();
 program
     .name("leetcode-fetch")
-    .version("0.0.1")
+    .version("0.1.0")
     .description("Fetch LeetCode problems and save them locally")
     .argument("[problem-link]", "Optional link to a specific LeetCode problem in the format https://leetcode.com/problems/problem-name/")
     .option("-l, --lang <language>", "Programming language for the code snippet", "python3")
-    .option("-s, --slug", "Use the problem's slug as the filename instead of its ID");
+    .option("-s, --slug", "Use the problem's slug as the filename instead of its ID")
+    .option("-b, --bare", "Only include problem title, difficulty, and starter snippet");
 program.parse(process.argv);
 const LEETCODE_API_URL = "https://leetcode.com/graphql";
 const PROBLEM_QUERY = `
@@ -55,18 +56,23 @@ const DAILY_PROBLEM_QUERY = `
 main();
 async function main() {
     const problemLink = program.args[0];
-    const language = program.opts().lang;
+    const language = normalizeLanguage(program.opts().lang);
     const useSlug = program.opts().slug;
+    const bare = program.opts().bare;
     try {
         const problem = await getProblem(problemLink);
         const fileName = `${useSlug ? problem.titleSlug : problem.questionId}.${getFileExtension(language)}`;
         let fileContent = `${problem.questionId} ${problem.title}
 ${problem.link} - ${problem.difficulty}
 
-${stripHtmlTagsAndDecode(problem.content)}`;
-        fileContent += `\n${problem.codeSnippets.find(snippet => snippet.langSlug === language)
+`;
+        if (!bare) {
+            fileContent += `${stripHtmlTagsAndDecode(problem.content)}\n`;
+        }
+        fileContent += `${problem.codeSnippets.find(snippet => snippet.langSlug === language)
             ?.code || `// No ${language} code available`}`;
         fs.writeFileSync(fileName, fileContent);
+        console.log(`File created: ${fileName}`);
     }
     catch (error) {
         console.error("Error:", error.message);
@@ -102,6 +108,26 @@ async function getProblem(problemLink) {
         link: problemLink || `https://leetcode.com/problems/${problem.titleSlug}/`
     };
 }
+// turns js and javascript into js for example
+function normalizeLanguage(language) {
+    const languageMap = {
+        js: "javascript",
+        ts: "typescript",
+        py: "python",
+        py3: "python3",
+        "c++": "cpp",
+        cs: "csharp",
+        "c#": "csharp",
+        kt: "kotlin",
+        rkt: "racket",
+        go: "golang",
+        rb: "ruby",
+        rs: "rust",
+        exs: "elixir",
+        erl: "erlang"
+    };
+    return languageMap[language.toLowerCase()] || language;
+}
 function getFileExtension(language) {
     const extensionMap = {
         c: "c",
@@ -135,6 +161,9 @@ function stripHtmlTagsAndDecode(html) {
         "&amp;": "&",
         "&lt;": "<",
         "&gt;": ">",
+        "&#39;": "'",
+        "#39;": "'",
+        "#34;": '"',
         "&nbsp;": " ",
         "&copy;": "©",
         "&reg;": "®",
