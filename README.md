@@ -22,10 +22,12 @@ leetcode-fetch
 leetcode-fetch https://leetcode.com/problems/valid-anagram/
 
 # to get a language other than python3
-leetcode-fetch https://leetcode.com/problems/valid-anagram/ --lang javascript
+leetcode-fetch --lang javascript
 
-# to save the file as the title of the problem
-leetcode-fetch https://leetcode.com/problems/valid-anagram/ --slug
+# to make the filename the title of the problem (as opposed to the number)
+leetcode-fetch https://leetcode.com/problems/number-of-provinces/ --slug
+
+# to only get the problem name and starter code
+leetcode-fetch --bare
 
 ```
-
