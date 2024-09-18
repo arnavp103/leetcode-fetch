@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 const program = new Command();
 program
     .name("leetcode-fetch")
-    .version("0.1.0")
+    .version("0.2.2")
     .description("Fetch LeetCode problems and save them locally")
     .argument("[problem-link]", "Optional link to a specific LeetCode problem in the format https://leetcode.com/problems/problem-name/")
     .option("-l, --lang <language>", "Programming language for the code snippet", "python3")
@@ -71,6 +71,11 @@ ${problem.link} - ${problem.difficulty}
         }
         fileContent += `${problem.codeSnippets.find(snippet => snippet.langSlug === language)
             ?.code || `// No ${language} code available`}`;
+        // check if that file already exists
+        if (fs.existsSync(fileName)) {
+            console.log(`File already exists: ${fileName}`);
+            return;
+        }
         fs.writeFileSync(fileName, fileContent);
         console.log(`File created: ${fileName}`);
     }
