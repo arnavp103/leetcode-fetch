@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 const program = new Command();
 program
     .name("leetcode-fetch")
-    .version("0.2.2")
+    .version("0.2.4")
     .description("Fetch LeetCode problems and save them locally")
     .argument("[problem-link]", "Optional link to a specific LeetCode problem in the format https://leetcode.com/problems/problem-name/")
     .option("-l, --lang <language>", "Programming language for the code snippet", "python3")
@@ -37,6 +37,7 @@ const DAILY_PROBLEM_QUERY = `
     activeDailyCodingChallengeQuestion {
       question {
         questionId
+		frontendQuestionId: questionFrontendId
         title
         titleSlug
         content
@@ -61,8 +62,8 @@ async function main() {
     const bare = program.opts().bare;
     try {
         const problem = await getProblem(problemLink);
-        const fileName = `${useSlug ? problem.titleSlug : problem.questionId}.${getFileExtension(language)}`;
-        let fileContent = `${problem.questionId} ${problem.title}
+        const fileName = `${useSlug ? problem.titleSlug : problem.frontendQuestionId}.${getFileExtension(language)}`;
+        let fileContent = `${problem.frontendQuestionId} ${problem.title}
 ${problem.link} - ${problem.difficulty}
 
 `;
@@ -86,7 +87,16 @@ ${problem.link} - ${problem.difficulty}
 async function getProblem(problemLink) {
     let query, variables;
     if (problemLink !== undefined) {
-        const titleSlug = problemLink.split("/").filter(Boolean).pop();
+        let titleSlug = "";
+        // if problem has /description/ 
+        // https://leetcode.com/problems/toeplitz-matrix/description/
+        // strip the /description/ part
+        if (problemLink.includes("/description")) {
+            titleSlug = problemLink.split("/description")[0].split("/problems/")[1];
+        }
+        else {
+            titleSlug = problemLink.split("/problems/")[1];
+        }
         query = PROBLEM_QUERY;
         variables = { titleSlug };
     }

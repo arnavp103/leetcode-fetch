@@ -6,9 +6,10 @@ import fetch from "node-fetch";
 
 const program = new Command();
 
+
 program
 	.name("leetcode-fetch")
-	.version("0.2.3")
+	.version("0.2.4")
 	.description("Fetch LeetCode problems and save them locally")
 	.argument(
 		"[problem-link]",

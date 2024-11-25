@@ -1,7 +1,7 @@
 {
 	"name": "leetcode-fetch",
 	"description": "Fetch leetcode problems to work on them locally",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"author": {
 		"name": "Arnav Priyadarshi",
 		"email": "arnavp103@gmail.com"
@@ -16,7 +16,8 @@
 		"leetcode-fetch": "dist/index.js"
 	},
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"publish": "npm run build && npm publish"
 	},
 	"devDependencies": {
 		"@types/node": "20.0.0",
