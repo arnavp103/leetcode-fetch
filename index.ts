@@ -8,7 +8,7 @@ const program = new Command();
 
 program
 	.name("leetcode-fetch")
-	.version("0.2.2")
+	.version("0.2.3")
 	.description("Fetch LeetCode problems and save them locally")
 	.argument(
 		"[problem-link]",
@@ -57,6 +57,7 @@ const DAILY_PROBLEM_QUERY = `
     activeDailyCodingChallengeQuestion {
       question {
         questionId
+		frontendQuestionId: questionFrontendId
         title
         titleSlug
         content
@@ -76,6 +77,7 @@ const DAILY_PROBLEM_QUERY = `
 
 interface Problem {
 	questionId: number;
+	frontendQuestionId: number;
 	title: string;
 	titleSlug: string;
 	content: string;
@@ -95,11 +97,10 @@ async function main() {
 	try {
 		const problem = await getProblem(problemLink);
 
-		const fileName = `${
-			useSlug ? problem.titleSlug : problem.questionId
-		}.${getFileExtension(language)}`;
+		const fileName = `${useSlug ? problem.titleSlug : problem.frontendQuestionId
+			}.${getFileExtension(language)}`;
 
-		let fileContent = `${problem.questionId} ${problem.title}
+		let fileContent = `${problem.frontendQuestionId} ${problem.title}
 ${problem.link} - ${problem.difficulty}
 
 `;
@@ -108,10 +109,9 @@ ${problem.link} - ${problem.difficulty}
 			fileContent += `${stripHtmlTagsAndDecode(problem.content)}\n`;
 		}
 
-		fileContent += `${
-			problem.codeSnippets.find(snippet => snippet.langSlug === language)
-				?.code || `// No ${language} code available`
-		}`;
+		fileContent += `${problem.codeSnippets.find(snippet => snippet.langSlug === language)
+			?.code || `// No ${language} code available`
+			}`;
 
 		// check if that file already exists
 		if (fs.existsSync(fileName)) {
@@ -129,7 +129,15 @@ ${problem.link} - ${problem.difficulty}
 async function getProblem(problemLink?: string) {
 	let query, variables;
 	if (problemLink !== undefined) {
-		const titleSlug = problemLink.split("/").filter(Boolean).pop();
+		let titleSlug = "";
+		// if problem has /description/ 
+		// https://leetcode.com/problems/toeplitz-matrix/description/
+		// strip the /description/ part
+		if (problemLink.includes("/description")) {
+			titleSlug = problemLink.split("/description")[0].split("/problems/")[1];
+		} else {
+			titleSlug = problemLink.split("/problems/")[1];
+		}
 		query = PROBLEM_QUERY;
 		variables = { titleSlug };
 	} else {
